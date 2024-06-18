@@ -1,0 +1,15 @@
+apiVersion: project.spikeidp.cit.com/v1alpha1
+kind: Repository
+metadata:
+  name: hello-crossplane
+spec:
+  forProvider:
+    visibility: private
+    version_control: Git
+    work_item_template: Agile
+    description: "Managed with Crossplane Github Provider (generated with Upjet)"
+    feature:
+      testplans: disabled
+      artifacts: disabled
+  providerConfigRef:
+    name: default

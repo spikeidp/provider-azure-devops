@@ -15,7 +15,7 @@ import (
 
 	"github.com/crossplane/upjet/pkg/terraform"
 
-	"github.com/upbound/upjet-provider-template/apis/v1beta1"
+	"github.com/spikeidp/provider-azure-devops/apis/v1beta1"
 )
 
 const (
@@ -24,7 +24,11 @@ const (
 	errGetProviderConfig    = "cannot get referenced ProviderConfig"
 	errTrackUsage           = "cannot track ProviderConfig usage"
 	errExtractCredentials   = "cannot extract credentials"
-	errUnmarshalCredentials = "cannot unmarshal template credentials as JSON"
+	errUnmarshalCredentials = "cannot unmarshal azure-devops credentials as JSON"
+	orgServiceURL           = "org_service_url"
+	clientId                = "client_id"
+	tenantId                = "tenant_id"
+	clientSecret            = "client_secret"
 )
 
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
@@ -62,11 +66,20 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 			return ps, errors.Wrap(err, errUnmarshalCredentials)
 		}
 
-		// Set credentials in Terraform provider configuration.
-		/*ps.Configuration = map[string]any{
-			"username": creds["username"],
-			"password": creds["password"],
-		}*/
+		ps.Configuration = map[string]any{}
+		if v, ok := creds[orgServiceURL]; ok {
+			ps.Configuration[orgServiceURL] = v
+		}
+		if v, ok := creds[clientId]; ok {
+			ps.Configuration[clientId] = v
+		}
+		if v, ok := creds[tenantId]; ok {
+			ps.Configuration[tenantId] = v
+		}
+		if v, ok := creds[clientSecret]; ok {
+			ps.Configuration[clientSecret] = v
+		}
+
 		return ps, nil
 	}
 }

@@ -1,0 +1,13 @@
+apiVersion: gitrepository.spikeidp.cit.com/v1alpha1
+kind: Repository
+metadata:
+  annotations:
+    meta.upbound.io/example-id: gitrepository/v1alpha1/repository
+  labels:
+    testing.upbound.io/example-name: example
+  name: repo01
+spec:
+  forProvider:
+    initialization:
+    - initType: Clean
+    projectId:

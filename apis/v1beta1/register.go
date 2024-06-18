@@ -13,7 +13,7 @@ import (
 
 // Package type metadata.
 const (
-	Group   = "template.upbound.io"
+	Group   = "azure-devops.spikeidp.cit.com"
 	Version = "v1beta1"
 )
 

@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: resources.null.template.upbound.io
+  name: projects.project.spikeidp.cit.com
 spec:
-  group: null.template.upbound.io
+  group: project.spikeidp.cit.com
   names:
     categories:
     - crossplane
     - managed
-    - template
-    kind: Resource
-    listKind: ResourceList
-    plural: resources
-    singular: resource
+    - azure-devops
+    kind: Project
+    listKind: ProjectList
+    plural: projects
+    singular: project
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,10 +34,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Resource is the Schema for the Resources API. The null_resource
-          resource implements the standard resource lifecycle but takes no further
-          action. The triggers argument allows specifying an arbitrary set of values
-          that, when changed, will cause the resource to be replaced.
+        description: Project is the Schema for the Projects API. Manages a project
+          within Azure DevOps organization.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -52,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ResourceSpec defines the desired state of Resource
+            description: ProjectSpec defines the desired state of Project
             properties:
               deletionPolicy:
                 default: Delete
@@ -69,13 +67,32 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  triggers:
+                  description:
+                    description: The Description of the Project.
+                    type: string
+                  features:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
+                    description: Defines the status (enabled, disabled) of the project
+                      features. Valid features are boards, repositories, pipelines,
+                      testplans, artifacts
                     type: object
+                  name:
+                    description: The Project Name.
+                    type: string
+                  versionControl:
+                    description: 'Specifies the version control system. Valid values:
+                      Git or Tfvc. Defaults to Git.'
+                    type: string
+                  visibility:
+                    description: 'Specifies the visibility of the Project. Valid values:
+                      private or public. Defaults to private.'
+                    type: string
+                  workItemTemplate:
+                    description: 'Specifies the work item template. Valid values:
+                      Agile, Basic, CMMI, Scrum or a custom, pre-existing one. Defaults
+                      to Agile. An empty string will use the parent organization default.'
+                    type: string
                 type: object
               initProvider:
                 description: THIS IS A BETA FIELD. It will be honored unless the Management
@@ -89,13 +106,32 @@ spec:
                   for example because of an external controller is managing them,
                   like an autoscaler.
                 properties:
-                  triggers:
+                  description:
+                    description: The Description of the Project.
+                    type: string
+                  features:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
+                    description: Defines the status (enabled, disabled) of the project
+                      features. Valid features are boards, repositories, pipelines,
+                      testplans, artifacts
                     type: object
+                  name:
+                    description: The Project Name.
+                    type: string
+                  versionControl:
+                    description: 'Specifies the version control system. Valid values:
+                      Git or Tfvc. Defaults to Git.'
+                    type: string
+                  visibility:
+                    description: 'Specifies the visibility of the Project. Valid values:
+                      private or public. Defaults to private.'
+                    type: string
+                  workItemTemplate:
+                    description: 'Specifies the work item template. Valid values:
+                      Agile, Basic, CMMI, Scrum or a custom, pre-existing one. Defaults
+                      to Agile. An empty string will use the parent organization default.'
+                    type: string
                 type: object
               managementPolicies:
                 default:
@@ -257,20 +293,48 @@ spec:
             required:
             - forProvider
             type: object
+            x-kubernetes-validations:
+            - message: spec.forProvider.name is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
+                || (has(self.initProvider) && has(self.initProvider.name))'
           status:
-            description: ResourceStatus defines the observed state of Resource.
+            description: ProjectStatus defines the observed state of Project.
             properties:
               atProvider:
                 properties:
-                  id:
+                  description:
+                    description: The Description of the Project.
                     type: string
-                  triggers:
+                  features:
                     additionalProperties:
                       type: string
-                    description: A map of arbitrary strings that, when changed, will
-                      force the null resource to be replaced, re-running any associated
-                      provisioners.
+                    description: Defines the status (enabled, disabled) of the project
+                      features. Valid features are boards, repositories, pipelines,
+                      testplans, artifacts
                     type: object
+                  id:
+                    description: The Project ID of the Project.
+                    type: string
+                  name:
+                    description: The Project Name.
+                    type: string
+                  processTemplateId:
+                    description: The Process Template ID used by the Project.
+                    type: string
+                  versionControl:
+                    description: 'Specifies the version control system. Valid values:
+                      Git or Tfvc. Defaults to Git.'
+                    type: string
+                  visibility:
+                    description: 'Specifies the visibility of the Project. Valid values:
+                      private or public. Defaults to private.'
+                    type: string
+                  workItemTemplate:
+                    description: 'Specifies the work item template. Valid values:
+                      Agile, Basic, CMMI, Scrum or a custom, pre-existing one. Defaults
+                      to Agile. An empty string will use the parent organization default.'
+                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.
